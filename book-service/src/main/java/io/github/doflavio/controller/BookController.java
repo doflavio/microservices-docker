@@ -16,7 +16,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Book endpoint")
 @RestController
 @RequestMapping("book-service")
-//http://localhost:8100/book-service/1/BRL
 public class BookController {
 	
 	@Autowired
