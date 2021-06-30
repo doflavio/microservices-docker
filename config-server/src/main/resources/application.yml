@@ -1,0 +1,15 @@
+#Configuraçăo  uri: usada para contornar o problema de infra que impedia o acesso ao reposiório remoto
+# para testar - http://localhost:8888/greeting-service/dev ou /qa ou /prod ou /perf
+server:
+  port: 8888
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: file://D:/Dev/workspaces-JAVA/sts/udemy/microservices-do-0/config-server-base
+          default-label: main
+          search-paths:
+          - 'greeting-service*'
