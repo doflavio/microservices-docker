@@ -7,6 +7,15 @@ services:
       - 8761:8761
     networks:
       - doflavio-network
+  
+  zipkin-server:
+    image: openzipkin/zipkin:2.23.2
+    ports:
+      - 9411:9411
+    networks:
+      - doflavio-network
+  
+  
 networks:
   doflavio-network:
     driver: bridge
