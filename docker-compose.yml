@@ -14,6 +14,19 @@ services:
       - 9411:9411
     networks:
       - doflavio-network
+      
+  api-gateway:
+    image: leandrocgsi/api-gateway:0.0.1-SNAPSHOT
+    ports:
+      - 8765:8765
+    depends_on:
+      - naming-server
+      - rabbit-mq
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411/
+    networks:
+      - erudio-network
   
   
 networks:
