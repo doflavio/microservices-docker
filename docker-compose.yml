@@ -1,13 +1,6 @@
 version: '3.4'
 
 services:
-  naming-server:
-    image: doflavio/naming-server:0.0.1-SNAPSHOT
-    ports:
-      - 8761:8761
-    networks:
-      - doflavio-network
-  
   zipkin-server:
     image: openzipkin/zipkin:2.23.2
     ports:
@@ -19,7 +12,7 @@ services:
       RABBIT_URI: amqp://guest:guest@rabbit-mq:5672
     networks:
       - doflavio-network
-  
+
   rabbit-mq:
     image: rabbitmq:3.8.14-management
     ports:
@@ -27,23 +20,7 @@ services:
       - 15672:15672
     networks:
       - doflavio-network
-      
-  api-gateway:
-    image: doflavio/api-gateway:0.0.1-SNAPSHOT
-    ports:
-      - 8765:8765
-    depends_on:
-      - naming-server
-      - rabbit-mq
-    environment:
-      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
-      SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411/
-      RABBIT_URI: amqp://guest:guest@rabbit-mq:5672
-      SPRING_RABBITMQ_HOST: rabbit-mq
-      SPRING_ZIPKIN_SENDER_TYPE: rabbit
-    networks:
-      - doflavio-network
-      
+
   cambio-db:
     image: mysql:5.7.22
     command: --default-authentication-plugin=mysql_native_password
@@ -81,13 +58,36 @@ services:
       - 3310
     networks:
       - doflavio-network
-  
+
+  naming-server:
+    image: doflavio/naming-server:0.0.1-SNAPSHOT
+    ports:
+      - 8761:8761
+    networks:
+      - doflavio-network
+
+  api-gateway:
+    image: doflavio/api-gateway:0.0.1-SNAPSHOT
+    ports:
+      - 8765:8765
+    depends_on:
+      - naming-server
+      - rabbit-mq
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411/
+      RABBIT_URI: amqp://guest:guest@rabbit-mq:5672
+      SPRING_RABBITMQ_HOST: rabbit-mq
+      SPRING_ZIPKIN_SENDER_TYPE: rabbit
+    networks:
+      - doflavio-network
+
   cambio-service:
     image: doflavio/cambio-service
     restart: always
     build:
       context: .
-      dockerfile: cambio-service/Dockerfile
+      dockerfile: 10-cambio-service/Dockerfile
     environment:
       TZ: America/Sao_Paulo
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
@@ -109,13 +109,13 @@ services:
       - rabbit-mq
     networks:
       - doflavio-network
-  
+      
   book-service:
-    image: leandrocgsi/book-service
+    image: doflavio/book-service
     restart: always
     build:
       context: .
-      dockerfile: book-service/Dockerfile
+      dockerfile: 10-book-service/Dockerfile
     environment:
       TZ: America/Sao_Paulo
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
@@ -136,8 +136,7 @@ services:
       - book-db
       - rabbit-mq
     networks:
-      - erudio-network
-  
+      - doflavio-network
 networks:
   doflavio-network:
     driver: bridge
